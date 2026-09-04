@@ -31,7 +31,7 @@ export const SURAH_NAMES = [
 ];
 
 export const EDITIONS = {
-  arabic: "ara-quransimple",
+  arabic: "ara-quranuthmanihaf",
   transliteration: "ara-quranphoneticst-la",
   english: "eng-abdelhaleem",
   french: "fra-islamicfoundati",

@@ -10,7 +10,6 @@ import { createScheduledImagePost, listScheduledPosts, resolveXChannel } from ".
 
 const command = process.argv[2] || "preview";
 const useFixture = process.argv.includes("--fixture");
-const root = new URL("../", import.meta.url);
 
 function localDate(timezone) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -53,13 +52,32 @@ async function loadBundles() {
   return { bundles: await Promise.all(pointers.map(fetchVerseBundle)), next };
 }
 
+async function capturesFor(bundles, directory) {
+  if (useFixture) {
+    return new Map(bundles.map((bundle) => [
+      `${bundle.surah}:${bundle.verse}`,
+      {
+        path: new URL(`../test/fixtures/quran-source/${bundle.surah}-${bundle.verse}.jpg`, import.meta.url).pathname,
+        rect: { left: 84, top: 215, width: 678, height: 100 }
+      }
+    ]));
+  }
+  const { captureQuranVerses } = await import("./quran-screenshot.mjs");
+  return captureQuranVerses(
+    bundles.map(({ surah, verse }) => ({ surah, verse })),
+    join(directory, "quran-source")
+  );
+}
+
 async function generateImages(bundles, directory) {
   await mkdir(directory, { recursive: true });
+  const captures = await capturesFor(bundles, directory);
   const outputs = [];
   for (const bundle of bundles) {
     const filename = `${bundle.surah}-${bundle.verse}.png`;
     const outputPath = join(directory, filename);
-    await renderVerse(bundle, outputPath, config.sources);
+    const capture = captures.get(`${bundle.surah}:${bundle.verse}`);
+    await renderVerse(bundle, outputPath, config.sources, capture);
     outputs.push({
       bundle,
       filename,
