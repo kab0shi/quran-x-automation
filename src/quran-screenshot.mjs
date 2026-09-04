@@ -7,12 +7,15 @@ async function enableInlineTransliteration(page) {
   const settings = page.locator('button[aria-label*="settings" i], button[aria-label*="paramètres" i]').first();
   await settings.waitFor({ state: "visible", timeout: 20_000 });
   await settings.click();
+  await page.getByRole("button", { name: /^IndoPak$/i }).click();
+  const arabicIncrease = page.getByRole("button", { name: /increase|augmenter/i });
+  for (let step = 0; step < 10 && await arabicIncrease.isEnabled(); step += 1) await arabicIncrease.click();
   await page.getByRole("tab", { name: /word by word|mot par mot/i }).click();
   await page.locator('input[name="inline-transliteration"]').check();
   const inlineTranslation = page.locator('input[name="inline-translation"]');
   if (await inlineTranslation.isChecked()) await inlineTranslation.uncheck();
-  const increase = page.getByRole("button", { name: /increase|augmenter/i });
-  for (let step = 0; step < 10 && await increase.isEnabled(); step += 1) await increase.click();
+  const transliterationIncrease = page.getByRole("button", { name: /increase|augmenter/i });
+  for (let step = 0; step < 10 && await transliterationIncrease.isEnabled(); step += 1) await transliterationIncrease.click();
   await page.getByRole("button", { name: /^ok$/i }).click();
 }
 
