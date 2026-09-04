@@ -1,0 +1,16 @@
+{
+  "targetHandle": "kab0shii",
+  "timezone": "Europe/Paris",
+  "postsPerDay": 5,
+  "times": ["18:00", "18:10", "18:20", "18:30", "18:40"],
+  "start": { "surah": 1, "verse": 1 },
+  "publicRepository": "kab0shi/quran-x-automation",
+  "hashtags": ["Quran", "Coran", "Kuran"],
+  "sources": {
+    "arabic": "Quran Simple (AlQuran Cloud)",
+    "transliteration": "Quran Phonetic",
+    "english": "M. A. S. Abdel Haleem",
+    "french": "Montada Islamic Foundation",
+    "turkish": "Diyanet İşleri"
+  }
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "surah": 1,
+    "verse": 1,
+    "surahName": "Al-Fatiha",
+    "arabic": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+    "transliteration": "Bismi Allahi Ar-Rahmani Ar-Rahimi",
+    "english": "In the name of God, the Lord of Mercy, the Giver of Mercy",
+    "french": "Au nom d’Allah, le Tout Clément, le Tout Miséricordieux",
+    "turkish": "Rahman ve Rahim olan Allah'ın adıyla"
+  },
+  {
+    "surah": 1,
+    "verse": 2,
+    "surahName": "Al-Fatiha",
+    "arabic": "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+    "transliteration": "Al-Hamdu Lillahi Rabbi Al-`Alamina",
+    "english": "Praise belongs to God, Lord of the Worlds",
+    "french": "Louange à Allah, Seigneur de l’Univers",
+    "turkish": "Hamd, Alemlerin Rabbi Allah'a mahsustur"
+  },
+  {
+    "surah": 1,
+    "verse": 3,
+    "surahName": "Al-Fatiha",
+    "arabic": "الرَّحْمَٰنِ الرَّحِيمِ",
+    "transliteration": "Ar-Rahmani Ar-Rahimi",
+    "english": "the Lord of Mercy, the Giver of Mercy",
+    "french": "Le Tout Clément, le Tout Miséricordieux",
+    "turkish": "O Rahman ve Rahim'dir"
+  },
+  {
+    "surah": 1,
+    "verse": 4,
+    "surahName": "Al-Fatiha",
+    "arabic": "مَالِكِ يَوْمِ الدِّينِ",
+    "transliteration": "Maliki Yawmi Ad-Dini",
+    "english": "Master of the Day of Judgement",
+    "french": "Souverain du Jour de la Rétribution",
+    "turkish": "Din Gününün sahibidir"
+  },
+  {
+    "surah": 1,
+    "verse": 5,
+    "surahName": "Al-Fatiha",
+    "arabic": "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
+    "transliteration": "Iyaka Na`budu Wa 'Iyaka Nasta`inu",
+    "english": "It is You we worship; it is You we ask for help",
+    "french": "C’est Toi (Seul) Que nous adorons, et c’est Toi (Seul) Dont nous cherchons l’assistance",
+    "turkish": "Ancak Sana kulluk eder ve yalnız Senden yardım dileriz"
+  }
+]

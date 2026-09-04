@@ -1,0 +1,27 @@
+name: Générer les aperçus
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Installer les polices
+        run: sudo apt-get update && sudo apt-get install -y fonts-noto-core fonts-noto-extra
+      - run: npm install --no-audit --no-fund
+      - run: npm test
+      - name: Générer avec les données réelles
+        run: npm run preview:live
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apercus-versets
+          path: public/previews/
+          retention-days: 7

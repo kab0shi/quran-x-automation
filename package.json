@@ -1,0 +1,19 @@
+{
+  "name": "quran-x-automation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Génère et programme cinq versets quotidiens multilingues sur X via Buffer.",
+  "scripts": {
+    "preview": "node src/index.mjs preview --fixture",
+    "preview:live": "node src/index.mjs preview",
+    "schedule": "node src/index.mjs schedule",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "sharp": "0.35.4"
+  }
+}
