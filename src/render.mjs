@@ -66,7 +66,7 @@ async function prepareQuranCapture(capture) {
   }
   return sharp(rgba, { raw: { width: info.width, height: info.height, channels: 4 } })
     .trim({ background: { r: FOREGROUND.r, g: FOREGROUND.g, b: FOREGROUND.b, alpha: 0 } })
-    .resize({ width: 900, height: 190, fit: "inside", withoutEnlargement: false })
+    .resize({ width: 720, height: 190, fit: "inside", withoutEnlargement: false })
     .png()
     .toBuffer();
 }

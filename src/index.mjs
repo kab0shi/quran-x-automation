@@ -54,13 +54,15 @@ async function loadBundles() {
 
 async function capturesFor(bundles, directory) {
   if (useFixture) {
-    return new Map(bundles.map((bundle) => [
-      `${bundle.surah}:${bundle.verse}`,
-      {
+    return new Map(bundles.map((bundle) => {
+      const reference = `${bundle.surah}:${bundle.verse}`;
+      return [reference, {
         path: new URL(`../test/fixtures/quran-source/${bundle.surah}-${bundle.verse}.jpg`, import.meta.url).pathname,
-        rect: { left: 84, top: 215, width: 678, height: 100 }
-      }
-    ]));
+        rect: reference === "1:1"
+          ? { left: 200, top: 0, width: 478, height: 216 }
+          : { left: 84, top: 215, width: 678, height: 100 }
+      }];
+    }));
   }
   const { captureQuranVerses } = await import("./quran-screenshot.mjs");
   return captureQuranVerses(

@@ -3,7 +3,7 @@ import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 
 async function enableInlineTransliteration(page) {
-  await page.goto("https://quran.com/1", { waitUntil: "domcontentloaded" });
+  await page.goto("https://quran.com/fr/louverture?readingMode=verse-by-verse&translations=31%2C85%2C77", { waitUntil: "domcontentloaded" });
   const settings = page.locator('button[aria-label*="settings" i], button[aria-label*="paramètres" i]').first();
   await settings.waitFor({ state: "visible", timeout: 20_000 });
   await settings.click();
@@ -12,7 +12,7 @@ async function enableInlineTransliteration(page) {
   const inlineTranslation = page.locator('input[name="inline-translation"]');
   if (await inlineTranslation.isChecked()) await inlineTranslation.uncheck();
   const increase = page.getByRole("button", { name: /increase|augmenter/i });
-  for (let step = 0; step < 3 && await increase.isEnabled(); step += 1) await increase.click();
+  for (let step = 0; step < 10 && await increase.isEnabled(); step += 1) await increase.click();
   await page.getByRole("button", { name: /^ok$/i }).click();
 }
 
