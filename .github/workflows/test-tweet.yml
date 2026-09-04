@@ -2,6 +2,10 @@ name: Publier un tweet test
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/test-tweet.yml
 
 permissions:
   contents: read
