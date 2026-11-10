@@ -2,9 +2,9 @@ name: alQamarDaily — 10 ayat tous les jours à 18h Paris
 
 on:
   schedule:
-    # UTC switches with DST; the script only executes at 17h in Europe/Paris.
-    - cron: '20 15 * * *'
-    - cron: '20 16 * * *'
+    # Prepare in the morning, giving ample time for rendering/hosting before 18h.
+    # 06:20 UTC = 07:20 CET / 08:20 CEST.
+    - cron: '20 6 * * *'
   workflow_dispatch:
 
 permissions:
@@ -19,11 +19,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - name: Vérifier le créneau 17 h Europe/Paris
+      - name: Vérifier la préparation avant 17 h Europe/Paris
         id: time
         run: |
           H=$(TZ=Europe/Paris date +%H)
-          if [ "$H" = "17" ]; then
+          if [ "$H" -ge 6 ] && [ "$H" -lt 17 ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
           else
             echo "run=false" >> "$GITHUB_OUTPUT"
