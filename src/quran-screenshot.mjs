@@ -20,14 +20,14 @@ async function enableInlineTransliteration(page) {
   await settings.click();
   await page.getByRole("button", { name: /^IndoPak$/i }).click();
   const arabicIncrease = page.getByRole("button", { name: /increase|augmenter/i });
-  for (let step = 0; step < 10 && await arabicIncrease.isEnabled(); step += 1) await arabicIncrease.click();
+  for (let step = 0; step < 2 && await arabicIncrease.isEnabled(); step += 1) await arabicIncrease.click();
   await page.getByRole("tab", { name: /word by word|mot par mot/i }).click();
   // The checkbox inputs are covered by styled labels on Quran.com.
   // Click their visible labels and verify the resulting checked state.
   await setSettingsToggle(page, "inline-transliteration", true);
   await setSettingsToggle(page, "inline-translation", false);
-  const transliterationIncrease = page.getByRole("button", { name: /increase|augmenter/i });
-  for (let step = 0; step < 10 && await transliterationIncrease.isEnabled(); step += 1) await transliterationIncrease.click();
+  // Keep Quran.com's normal word-by-word transliteration size:
+  // excessive enlargement causes individual words to wrap into fragments.
   await page.getByRole("button", { name: /^ok$/i }).click();
 }
 

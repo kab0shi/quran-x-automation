@@ -66,7 +66,7 @@ async function prepareQuranCapture(capture) {
   }
   return sharp(rgba, { raw: { width: info.width, height: info.height, channels: 4 } })
     .trim({ background: { r: FOREGROUND.r, g: FOREGROUND.g, b: FOREGROUND.b, alpha: 0 } })
-    .resize({ width: 720, height: 190, fit: "inside", withoutEnlargement: false })
+    .resize({ width: 940, height: 325, fit: "inside", withoutEnlargement: false })
     .png()
     .toBuffer();
 }
@@ -75,7 +75,7 @@ export async function renderVerse(bundle, outputPath, sources, capture) {
   const quranCapture = await prepareQuranCapture(capture);
   const captureInfo = await sharp(quranCapture).metadata();
   const captureX = Math.round((WIDTH - captureInfo.width) / 2);
-  const captureY = 220;
+  const captureY = Math.round(175 + (325 - captureInfo.height) / 2);
 
   let y = 555;
   const english = translationSection({ language: "ENGLISH", text: bundle.english, y, flag: gbFlag });
