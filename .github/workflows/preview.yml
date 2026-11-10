@@ -30,6 +30,7 @@ jobs:
       - name: Générer avec les données réelles
         run: npm run preview:live
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: apercus-versets
           path: public/previews/

@@ -4,7 +4,7 @@ import { join } from "node:path";
 
 async function enableInlineTransliteration(page) {
   await page.goto("https://quran.com/fr/louverture?readingMode=verse-by-verse&translations=31%2C85%2C77", { waitUntil: "domcontentloaded" });
-  const settings = page.locator('button[aria-label*="settings" i], button[aria-label*="paramètres" i]').first();
+  const settings = page.locator('button[aria-label*="settings" i]:visible, button[aria-label*="paramètres" i]:visible').first();
   await settings.waitFor({ state: "visible", timeout: 20_000 });
   await settings.click();
   await page.getByRole("button", { name: /^IndoPak$/i }).click();
@@ -30,17 +30,30 @@ export async function captureQuranVerses(pointers, outputDirectory) {
       locale: "fr-FR"
     });
     const page = await context.newPage();
-    await enableInlineTransliteration(page);
-    const captures = new Map();
-    for (const pointer of pointers) {
-      await page.goto(`https://quran.com/${pointer.surah}/${pointer.verse}`, { waitUntil: "domcontentloaded" });
-      const verse = page.locator('[class*="VerseText_verseTextContainer"]').first();
-      await verse.waitFor({ state: "visible", timeout: 20_000 });
-      const path = join(outputDirectory, `${pointer.surah}-${pointer.verse}.png`);
-      await verse.screenshot({ path });
-      captures.set(`${pointer.surah}:${pointer.verse}`, { path });
+    try {
+      await enableInlineTransliteration(page);
+      const captures = new Map();
+      for (const pointer of pointers) {
+        await page.goto(`https://quran.com/${pointer.surah}/${pointer.verse}`, { waitUntil: "domcontentloaded" });
+        const verse = page.locator('[class*="VerseText_verseTextContainer"]:visible').first();
+        await verse.waitFor({ state: "visible", timeout: 20_000 });
+        const path = join(outputDirectory, `${pointer.surah}-${pointer.verse}.png`);
+        await verse.screenshot({ path });
+        captures.set(`${pointer.surah}:${pointer.verse}`, { path });
+      }
+      return captures;
+    } catch (error) {
+      // Keep a screenshot and UI inventory for diagnosing Quran.com UI updates.
+      await page.screenshot({ path: join(outputDirectory, "debug-quran.png"), fullPage: true }).catch(() => {});
+      const buttons = await page.locator('button:visible, [role="tab"]:visible').evaluateAll((nodes) =>
+        nodes.map((node) => ({
+          role: node.getAttribute("role") || "button",
+          aria: node.getAttribute("aria-label"),
+          text: (node.textContent || "").trim().replace(/\\s+/g, " ").slice(0, 90)
+        })).slice(0, 90)).catch(() => []);
+      console.error("Quran.com URL :", page.url(), "Boutons visibles :", JSON.stringify(buttons));
+      throw error;
     }
-    return captures;
   } finally {
     await browser.close();
   }
