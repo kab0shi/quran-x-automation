@@ -1,0 +1,37 @@
+name: Vérifier la publication immédiate sur X
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/verify-immediate.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  status:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Lire l'état réel du tweet dans Buffer (sans écrire)
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+        run: |
+          node <<'NODE'
+          const token=process.env.BUFFER_API_TOKEN;
+          const query=`query($input: PostInput!){ post(input:$input){ id status externalLink sentAt sharedNow shareMode dueAt error {message} } }`;
+          const variables={input:{id:"6af3303d825741bba83c7d27"}};
+          for(let i=0;i<8;i++){
+            const r=await fetch("https://api.buffer.com",{
+              method:"POST",headers:{"content-type":"application/json",authorization:`Bearer ${token}`},
+              body:JSON.stringify({query,variables})
+            });
+            const body=await r.json();
+            if(!r.ok || body.errors?.length)throw Error(JSON.stringify(body.errors||body));
+            const p=body.data?.post;
+            if(!p)throw Error("Tweet introuvable");
+            console.log("STATUT PREMIER TWEET :", JSON.stringify(p));
+            if(p.status==="sent" || p.status==="error"){if(p.status==="error")process.exitCode=1;break;}
+            await new Promise(done=>setTimeout(done,3500));
+          }
+          NODE
