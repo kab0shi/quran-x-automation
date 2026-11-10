@@ -2,6 +2,17 @@ import { chromium } from "playwright";
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 
+async function setSettingsToggle(page, name, enabled) {
+  const input = page.locator(`input[name="${name}"]`);
+  if (await input.isChecked() === enabled) return;
+  const label = page.locator(`label[for="${name}"]:visible, label:has(input[name="${name}"]):visible`).first();
+  if (await label.count()) await label.click();
+  else await input.setChecked(enabled, { force: true });
+  if (await input.isChecked() !== enabled) {
+    throw new Error(`Le réglage Quran.com "${name}" n'a pas été appliqué`);
+  }
+}
+
 async function enableInlineTransliteration(page) {
   await page.goto("https://quran.com/fr/louverture?readingMode=verse-by-verse&translations=31%2C85%2C77", { waitUntil: "domcontentloaded" });
   const settings = page.locator('button[aria-label*="settings" i]:visible, button[aria-label*="paramètres" i]:visible').first();
@@ -11,9 +22,10 @@ async function enableInlineTransliteration(page) {
   const arabicIncrease = page.getByRole("button", { name: /increase|augmenter/i });
   for (let step = 0; step < 10 && await arabicIncrease.isEnabled(); step += 1) await arabicIncrease.click();
   await page.getByRole("tab", { name: /word by word|mot par mot/i }).click();
-  await page.locator('input[name="inline-transliteration"]').check();
-  const inlineTranslation = page.locator('input[name="inline-translation"]');
-  if (await inlineTranslation.isChecked()) await inlineTranslation.uncheck();
+  // The checkbox inputs are covered by styled labels on Quran.com.
+  // Click their visible labels and verify the resulting checked state.
+  await setSettingsToggle(page, "inline-transliteration", true);
+  await setSettingsToggle(page, "inline-translation", false);
   const transliterationIncrease = page.getByRole("button", { name: /increase|augmenter/i });
   for (let step = 0; step < 10 && await transliterationIncrease.isEnabled(); step += 1) await transliterationIncrease.click();
   await page.getByRole("button", { name: /^ok$/i }).click();
