@@ -77,3 +77,10 @@ test("phase lunaire et forme projetée évoluent chaque jour", () => {
   assert.notEqual(thin, full);
   assert.equal(illuminatedDiscPath(0,0,100,.5,false).includes("NaN"), false);
 });
+
+test("le croissant du 11 novembre grandit après celui du 10", () => {
+  const today = moonInfo("2026-11-10T17:00:00Z");
+  const tomorrow = moonInfo("2026-11-11T17:00:00Z");
+  assert.ok(tomorrow.illuminated > today.illuminated);
+  assert.ok(tomorrow.illuminated < .09);
+});
