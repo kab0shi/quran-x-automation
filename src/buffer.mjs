@@ -22,7 +22,7 @@ export async function resolveXChannel(token, targetHandle) {
   const organizations = accountData?.account?.organizations ?? [];
   for (const organization of organizations) {
     const channelData = await graphql(token, `
-      query Channels($organizationId: ID!) {
+      query Channels($organizationId: OrganizationId!) {
         channels(input: { organizationId: $organizationId }) {
           id name displayName service isQueuePaused
         }
@@ -39,7 +39,7 @@ export async function resolveXChannel(token, targetHandle) {
 
 export async function listScheduledPosts(token, organizationId, channelId) {
   const data = await graphql(token, `
-    query Scheduled($organizationId: ID!, $channelIds: [ID!]) {
+    query Scheduled($organizationId: OrganizationId!, $channelIds: [ID!]) {
       posts(input: {
         organizationId: $organizationId,
         filter: { status: [scheduled], channelIds: $channelIds }
