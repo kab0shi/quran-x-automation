@@ -71,7 +71,8 @@ async function capturesFor(bundles, directory) {
   );
 }
 
-async function generateImages(bundles, directory) {
+async function generateImages(bundles, directory, publicationDate = localDate(config.timezone)) {
+  const publishAt = new Date(zonedDueAt(publicationDate, config.publishTime || "18:00", config.timezone));
   await mkdir(directory, { recursive: true });
   const captures = await capturesFor(bundles, directory);
   const outputs = [];
@@ -79,8 +80,9 @@ async function generateImages(bundles, directory) {
     const filename = `${bundle.surah}-${bundle.verse}.png`;
     const outputPath = join(directory, filename);
     const capture = captures.get(`${bundle.surah}:${bundle.verse}`);
-    await renderVerse(bundle, outputPath, config.sources, capture);
+    const { moon } = await renderVerse(bundle, outputPath, config.sources, capture, publishAt);
     outputs.push({
+      moon,
       bundle,
       filename,
       outputPath,
@@ -97,6 +99,7 @@ async function preview() {
   const outputs = await generateImages(bundles, outputDirectory);
   const manifest = outputs.map(({ bundle, filename, caption, altText }) => ({
     reference: `${bundle.surah}:${bundle.verse}`,
+    lunarIlluminationPercent: Math.round((outputs.find(o => o.filename === filename)?.moon.illuminated ?? 0) * 100),
     filename,
     caption,
     altText

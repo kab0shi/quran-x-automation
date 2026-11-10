@@ -62,3 +62,18 @@ test("Montada depuis QuranEnc : la traduction est séparée des notes", () => {
   );
   assert.throws(() => parseMontadaResponse(payload, 2, 4), /incohérente/);
 });
+
+import { moonInfo, illuminatedDiscPath } from "../src/moon.mjs";
+test("la lune du 10 novembre 2026 est un croissant croissant très fin", () => {
+  const lunar = moonInfo("2026-11-10T17:00:00Z");
+  assert.ok(lunar.illuminated > 0 && lunar.illuminated < .04);
+  assert.equal(lunar.waxing, true);
+});
+test("phase lunaire et forme projetée évoluent chaque jour", () => {
+  const nov24 = moonInfo("2026-11-24T17:00:00Z");
+  assert.ok(nov24.illuminated > .97);
+  const thin = illuminatedDiscPath(0,0,100,.015,true);
+  const full = illuminatedDiscPath(0,0,100,1,true);
+  assert.notEqual(thin, full);
+  assert.equal(illuminatedDiscPath(0,0,100,.5,false).includes("NaN"), false);
+});
