@@ -1,46 +1,34 @@
-# Quran X Automation
+# alQamarDaily — versets du Coran sur X
 
-Projet gratuit pour générer dix images de versets multilingues et, après validation, les programmer chaque jour sur X via Buffer.
+Compte cible : **@alQamarDaily**. Projet de publication automatique : **un fil de 10 ayat par jour à 18 h, heure Europe/Paris**, à partir du **11 novembre 2026**. Le 10 novembre, un premier tweet Al-Fatiha 1:1 a été programmé séparément pour 18 h.
 
-## État actuel
+## Identité visuelle validée
 
-Le dépôt est volontairement en **mode aperçu uniquement** : aucun workflow quotidien n'est activé et aucune publication X ne peut partir automatiquement.
+- Fond bleu nuit uni et légèrement dégradé, écritures ivoire.
+- Arabe IndoPak et prononciation mot par mot capturés depuis Quran.com.
+- Drapeaux seuls (🇬🇧, 🇫🇷, 🇹🇷), textes dans l'ordre anglais, français, turc.
+- Aucun @, montagne, nuage, étoile ou trait de séparation.
+- Une Lune réaliste *stylisée* au bas de l'image dont la portion illuminée suit l'éphéméride astronomique du jour à 18 h (librairie `astronomy-engine`). L'orientation est simplifiée pour l'hémisphère nord.
+- Le texte français Montada est récupéré via QuranEnc séparément des notes explicatives ; les autres traductions viennent de Quran API.
 
-Les images contiennent :
+## Workflow
 
-- la référence en haut ;
-- une capture fidèle de Quran.com : chaque mot arabe conserve ses signes coraniques et sa phonétique apparaît directement dessous ;
-- les traductions anglaise, française et turque plus espacées ;
-- un fond gris sombre uniforme, sans cartes ni encadrés colorés ; seuls les drapeaux gardent leurs couleurs ;
-- une source discrète en bas à droite ;
-- un texte alternatif détaillé destiné aux lecteurs d'écran.
+- `Générer les aperçus` : teste le code, produit les images et conserve des copies dans `public/previews/`.
+- `Vérifier Buffer (lecture seule)` : vérifie la connexion au compte sans publication.
+- `Premier tweet lunaire — 10 novembre 18h` : test unique (la date et l'heure sont vérifiées dans le script ; pas de nouvelle publication automatique).
+- `alQamarDaily — 10 ayat tous les jours à 18h Paris` : préparation à 17 h 20, heure de Paris, via deux créneaux UTC pour gérer le changement d'heure. Les cartes sont rendues, envoyées dans GitHub comme images publiques, puis **un seul fil de 10 posts** est programmé dans Buffer pour 18 h. L'avancement dans `state.json` n'est enregistré qu'après confirmation par Buffer.
+- `Publier un tweet test (verrouillé)` : ancien workflow de test, sans déclenchement automatique.
 
-## Tester localement
+Le compte Buffer Free autorise un nombre limité de posts ou de fils simultanément en file d'attente ; cette architecture ne garde qu'un fil quotidien à la fois.
+
+**Sécurité et limitations :** aucun token Buffer n'est écrit dans le dépôt. Pour chaque verset, une traduction qui excède la zone lisible arrête la programmation plutôt que de couper le texte. Les très longs versets demanderont une adaptation de la mise en page en plusieurs images. La publication sur X n'est confirmée qu'après la présence du post dans l'onglet « Sent » de Buffer ou directement sur X (une programmation Buffer n'est pas une preuve de livraison).
+
+## Commandes
 
 ```bash
-npm ci
+npm install
 npm test
-npm run preview
+npm run preview:live
 ```
 
-`npm run preview:live` récupère les dix versets depuis l'API Quran open source. Les sorties sont placées dans `public/previews/`.
-
-## Sources de texte
-
-Le bloc arabe et sa phonétique sont capturés directement depuis [Quran.com](https://quran.com). Les traductions et le texte alternatif viennent du projet open source [Quran API](https://github.com/fawazahmed0/quran-api) : texte arabe Uthmani pour les lecteurs d'écran, traduction anglaise de M. A. S. Abdel Haleem, traduction française de Montada Islamic Foundation et traduction turque de Diyanet İşleri.
-
-## Sécurité
-
-Le jeton Buffer ne doit jamais être écrit dans un fichier ni envoyé dans une conversation. Lors de l'activation finale, il sera ajouté directement dans GitHub sous `Settings → Secrets and variables → Actions` avec le nom `BUFFER_API_TOKEN`.
-
-## Configuration actuelle
-
-Le compte cible est `@alQamarDaily`. Dix aperçus sont générés, en commençant au verset indiqué dans `state.json`. Le workflow d'aperçu est aussi relancé lors des modifications du code, sans connexion à Buffer ni publication sur X. Les dix créneaux, de 18 h à 19 h 30 (Europe/Paris), sont destinés à une future activation manuelle du programmeur : celle-ci **n'est pas active**.
-
-## Publication de test verrouillée
-
-Le workflow « Publier un tweet test » ne se lance plus automatiquement quand un fichier workflow change. Une confirmation écrite exacte est obligatoire. Ne pas le lancer tant que le rendu n'a pas été validé, et tant que les images de test ne sont pas publiquement hébergées dans le dépôt. La vérification Buffer en lecture seule est accessible indépendamment et ne programme aucun tweet.
-
-## Nouvelle publication quotidienne
-
-Un seul fil X contenant 10 images de versets sera programmé **chaque jour à 18:00 Europe/Paris** (hiver comme été), à partir du 11 novembre 2026. Chaque image montre la phase astronomique réelle de la Lune à l'heure de publication, calculée par Astronomy Engine. Le fil est préparé puis les images sont publiées dans le dépôt avant l'appel Buffer. Si le texte du verset ne tient pas lisiblement sur la carte, la programmation s'arrête sans tronquer le verset.
+Le jeton Buffer doit rester dans les GitHub Actions Secrets sous le nom `BUFFER_API_TOKEN`.
