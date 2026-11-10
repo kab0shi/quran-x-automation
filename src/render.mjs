@@ -27,7 +27,7 @@ function trFlag(x, y) {
 
 function translationRow(text, flag, y) {
   const lines = wrapText(text, 46);
-  if (lines.length > 3) throw new Error(`Traduction trop longue (${lines.length} lignes) : carte additionnelle requise`);
+  if (lines.length > 4) throw new Error(`Traduction trop longue (${lines.length} lignes) : carte additionnelle requise`);
   return {
     next: y + (lines.length-1)*46 + 110,
     svg: `${flag(154,y-7)}${lineMarkup(lines, 266, y+28, { fontSize: 36, lineHeight: 46 })}`
