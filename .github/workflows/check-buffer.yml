@@ -1,0 +1,28 @@
+name: Vérifier Buffer (lecture seule)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/check-buffer.yml"
+      - "src/buffer.mjs"
+      - "src/check-buffer.mjs"
+      - "config.json"
+
+permissions:
+  contents: read
+
+jobs:
+  check-buffer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Vérifier le compte X dans Buffer sans publier
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+        run: node src/check-buffer.mjs
