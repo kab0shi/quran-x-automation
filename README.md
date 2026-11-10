@@ -40,3 +40,7 @@ Le compte cible est `@alQamarDaily`. Dix aperçus sont générés, en commençan
 ## Publication de test verrouillée
 
 Le workflow « Publier un tweet test » ne se lance plus automatiquement quand un fichier workflow change. Une confirmation écrite exacte est obligatoire. Ne pas le lancer tant que le rendu n'a pas été validé, et tant que les images de test ne sont pas publiquement hébergées dans le dépôt. La vérification Buffer en lecture seule est accessible indépendamment et ne programme aucun tweet.
+
+## Nouvelle publication quotidienne
+
+Un seul fil X contenant 10 images de versets sera programmé **chaque jour à 18:00 Europe/Paris** (hiver comme été), à partir du 11 novembre 2026. Chaque image montre la phase astronomique réelle de la Lune à l'heure de publication, calculée par Astronomy Engine. Le fil est préparé puis les images sont publiées dans le dépôt avant l'appel Buffer. Si le texte du verset ne tient pas lisiblement sur la carte, la programmation s'arrête sans tronquer le verset.

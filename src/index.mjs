@@ -6,7 +6,7 @@ import state from "../state.json" with { type: "json" };
 import { altTextFor, captionFor } from "./format.mjs";
 import { fetchVerseBundle, takePointers } from "./quran.mjs";
 import { renderVerse } from "./render.mjs";
-import { createScheduledImagePost, listScheduledPosts, resolveXChannel } from "./buffer.mjs";
+import { createScheduledThreadPost, listScheduledPosts, resolveXChannel } from "./buffer.mjs";
 
 const command = process.argv[2] || "preview";
 const useFixture = process.argv.includes("--fixture");
@@ -118,45 +118,62 @@ async function waitUntilPublic(url) {
 }
 
 async function schedule() {
-  const token = process.env.BUFFER_API_TOKEN;
-  if (!token) throw new Error("Secret BUFFER_API_TOKEN absent");
-  if (config.times.length !== config.postsPerDay) throw new Error("Le nombre d'horaires ne correspond pas au nombre de publications");
-
   const date = localDate(config.timezone);
-  const { bundles, next } = await loadBundles();
-  const directory = new URL(`../public/posts/${date}/`, import.meta.url).pathname;
-  const outputs = await generateImages(bundles, directory);
-
-  if (process.env.IMAGES_COMMITTED !== "true") {
-    console.log("Images générées. Elles doivent être commit/push avant la programmation Buffer.");
+  if (config.dailyStartDate && date < config.dailyStartDate) {
+    console.log(`Programmation quotidienne prévue à partir du ${config.dailyStartDate}, aucune action aujourd'hui.`);
+    return;
+  }
+  if (state.lastCompletedDate === date) {
+    console.log(`Déjà programmé pour ${date} ; pas de doublon.`);
     return;
   }
 
-  const channel = await resolveXChannel(token, config.targetHandle);
-  const scheduled = await listScheduledPosts(token, channel.organizationId, channel.id);
+  const dueAt = zonedDueAt(date, config.publishTime || "18:00", config.timezone);
+  if (Date.now() >= new Date(dueAt).getTime() - 2*60_000) {
+    throw new Error(`Trop tard pour programmer le fil de ${date} à 18 h (Europe/Paris) : aucune publication lancée en retard.`);
+  }
+  const directory = new URL(`../public/posts/${date}/`, import.meta.url).pathname;
+  const manifestPath = join(directory, "manifest.json");
 
-  for (let index = 0; index < outputs.length; index += 1) {
-    const output = outputs[index];
-    const dueAt = zonedDueAt(date, config.times[index], config.timezone);
-    const imageUrl = `https://raw.githubusercontent.com/${config.publicRepository}/main/public/posts/${date}/${basename(output.outputPath)}`;
-    const alreadyExists = scheduled.some((post) => post.text === output.caption && new Date(post.dueAt).toISOString() === dueAt);
-    if (alreadyExists) {
-      console.log(`Déjà programmé : ${output.bundle.surah}:${output.bundle.verse}`);
-      continue;
-    }
-    await waitUntilPublic(imageUrl);
-    await createScheduledImagePost(token, {
-      channelId: channel.id,
-      text: output.caption,
-      dueAt,
-      imageUrl,
-      altText: output.altText
-    });
-    console.log(`Programmé : ${output.bundle.surah}:${output.bundle.verse} à ${dueAt}`);
+  if (process.env.IMAGES_COMMITTED !== "true") {
+    const { bundles, next } = await loadBundles();
+    if (bundles.length !== config.postsPerDay) throw new Error("Nombre de versets incomplet");
+    const outputs = await generateImages(bundles, directory, date);
+    await writeFile(manifestPath, JSON.stringify({
+      date, dueAt, next,
+      posts: outputs.map((item) => ({
+        filename: item.filename,
+        reference: `${item.bundle.surah}:${item.bundle.verse}`,
+        caption: item.caption,
+        altText: item.altText,
+        lunarIlluminationPercent: item.moon.percent
+      }))
+    }, null, 2) + "\n");
+    console.log(`Images du ${date} préparées. Aucun tweet créé à cette étape.`);
+    return;
   }
 
-  await access(directory, constants.R_OK);
-  await writeFile(new URL("../state.json", import.meta.url), `${JSON.stringify({ nextVerse: next, lastCompletedDate: date }, null, 2)}\n`, "utf8");
+  const token = process.env.BUFFER_API_TOKEN;
+  if (!token) throw new Error("Secret BUFFER_API_TOKEN absent");
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  if (manifest.date !== date || manifest.dueAt !== dueAt || manifest.posts.length !== config.postsPerDay) {
+    throw new Error("Manifest quotidien incohérent");
+  }
+  const posts = manifest.posts.map((item) => ({
+    text: item.caption,
+    altText: item.altText,
+    imageUrl: `https://raw.githubusercontent.com/${config.publicRepository}/main/public/posts/${date}/${item.filename}`
+  }));
+  for (const post of posts) await waitUntilPublic(post.imageUrl);
+  const channel = await resolveXChannel(token, config.targetHandle);
+  if (channel.isQueuePaused) throw new Error("Canal X en pause dans Buffer");
+  const queue = await listScheduledPosts(token, channel.organizationId, channel.id);
+  const duplicate = queue.find((item) => item.text === posts[0].text && item.dueAt && new Date(item.dueAt).toISOString() === dueAt);
+  const post = duplicate || await createScheduledThreadPost(token, { channelId: channel.id, dueAt, posts });
+  await writeFile(new URL("../state.json", import.meta.url), JSON.stringify({
+    nextVerse: manifest.next, lastCompletedDate: date, lastBufferPostId: post.id
+  }, null, 2) + "\n", "utf8");
+  console.log(`${duplicate ? "Déjà programmé" : "Fil de 10 ayat programmé"} : @${config.targetHandle}, ${date} 18:00 Paris (Buffer ${post.id}).`);
 }
 
 if (command === "preview") await preview();

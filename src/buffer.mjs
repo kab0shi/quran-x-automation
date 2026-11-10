@@ -90,3 +90,29 @@ export async function createScheduledImagePost(token, { channelId, text, dueAt, 
   if (result?.post?.id) return result.post;
   throw new Error(`Buffer : création de publication refusée : ${result?.message || "réponse inconnue"}`);
 }
+
+export async function createScheduledThreadPost(token, { channelId, dueAt, posts }) {
+  if (!posts?.length) throw new Error("Fil Buffer vide");
+  const thread = posts.map((item) => ({
+    text: item.text,
+    assets: [{ image: { url: item.imageUrl, metadata: { altText: item.altText } } }]
+  }));
+  const data = await graphql(token, `
+    mutation CreateThread($input: CreatePostInput!) {
+      createPost(input: $input) {
+        ... on PostActionSuccess { post { id text dueAt status } }
+        ... on MutationError { message }
+      }
+    }
+  `, { input: {
+    channelId,
+    text: thread[0].text,
+    schedulingType: "automatic",
+    mode: "customScheduled",
+    dueAt,
+    metadata: { twitter: { thread } }
+  } });
+  const result = data?.createPost;
+  if (result?.post?.id) return result.post;
+  throw new Error(`Buffer : programmation du fil refusée : ${result?.message || "réponse inconnue"}`);
+}

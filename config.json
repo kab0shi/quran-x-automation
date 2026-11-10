@@ -2,18 +2,6 @@
   "targetHandle": "alQamarDaily",
   "timezone": "Europe/Paris",
   "postsPerDay": 10,
-  "times": [
-    "18:00",
-    "18:10",
-    "18:20",
-    "18:30",
-    "18:40",
-    "18:50",
-    "19:00",
-    "19:10",
-    "19:20",
-    "19:30"
-  ],
   "start": {
     "surah": 1,
     "verse": 1
@@ -32,5 +20,6 @@
     "turkish": "Diyanet İşleri"
   },
   "publishTime": "18:00",
-  "dailyFormat": "thread"
+  "dailyFormat": "thread",
+  "dailyStartDate": "2026-11-11"
 }
