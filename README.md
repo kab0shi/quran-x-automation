@@ -16,7 +16,7 @@ Compte cible : **@alQamarDaily**. Projet de publication automatique : **un fil d
 - `Générer les aperçus` : teste le code, produit les images et conserve des copies dans `public/previews/`.
 - `Vérifier Buffer (lecture seule)` : vérifie la connexion au compte sans publication.
 - `Premier tweet lunaire — 10 novembre 18h` : test unique (la date et l'heure sont vérifiées dans le script ; pas de nouvelle publication automatique).
-- `alQamarDaily — 10 ayat tous les jours à 18h Paris` : préparation à 17 h 20, heure de Paris, via deux créneaux UTC pour gérer le changement d'heure. Les cartes sont rendues, envoyées dans GitHub comme images publiques, puis **un seul fil de 10 posts** est programmé dans Buffer pour 18 h. L'avancement dans `state.json` n'est enregistré qu'après confirmation par Buffer.
+- `alQamarDaily — 10 ayat tous les jours à 18h Paris` : préparation le matin (06 h 20 UTC, soit 07 h 20 en hiver ou 08 h 20 en été) pour garantir une marge avant la publication de 18 h. Les cartes sont rendues, envoyées dans GitHub comme images publiques, puis **un seul fil de 10 posts** est programmé dans Buffer pour 18 h. L'avancement dans `state.json` n'est enregistré qu'après confirmation par Buffer.
 - `Publier un tweet test (verrouillé)` : ancien workflow de test, sans déclenchement automatique.
 
 Le compte Buffer Free autorise un nombre limité de posts ou de fils simultanément en file d'attente ; cette architecture ne garde qu'un fil quotidien à la fois.
