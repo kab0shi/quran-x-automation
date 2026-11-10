@@ -72,7 +72,7 @@ export async function renderVerse(bundle, outputPath, sources, capture, publishA
 
   const surahAr = ARABIC_SURAHS[bundle.surah] || "سُورَة";
   const surahName = `SŪRAT ${bundle.surahName.toUpperCase()}`;
-  const moon = moonSvg(publishAt, 600, 1321, 116);
+  const moon = moonSvg(publishAt, 600, 1330, 148);
   const svg = `<svg width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <radialGradient id="night" cx="50%" cy="47%" r="88%">
