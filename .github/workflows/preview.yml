@@ -30,7 +30,7 @@ jobs:
       - name: Vérifier les polices système
         run: fc-match 'Noto Naskh Arabic'
       - run: npm install --no-audit --no-fund
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install chromium
       - run: npm test
       - name: Générer avec les données réelles
         run: npm run preview:live
