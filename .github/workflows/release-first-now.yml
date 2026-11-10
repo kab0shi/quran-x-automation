@@ -1,0 +1,25 @@
+name: Publier maintenant le premier ayah sur X
+
+# Exactement une fois sur création du workflow. Le script vérifie
+# l'identifiant de l'unique tweet déjà programmé avant de le modifier.
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/release-first-now.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Remplacer l'image puis publier le tweet 1:1 existant immédiatement
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+        run: node src/publish-now.mjs

@@ -15,7 +15,7 @@ if (config.targetHandle !== "alQamarDaily") throw new Error("Le mauvais compte X
 
 const first = manifest.find(item => item.reference === "1:1");
 if (!first || first.lunarIlluminationPercent > 5) throw new Error("Aperçu lunar 1:1 incorrect");
-const img = `https://raw.githubusercontent.com/${config.publicRepository}/main/public/previews/${first.filename}`;
+const img = `https://raw.githubusercontent.com/${config.publicRepository}/${process.env.GITHUB_SHA || "main"}/public/previews/${first.filename}`;
 const file = await fetch(img, { method: "HEAD", cache: "no-store" });
 if (!file.ok || !file.headers.get("content-type")?.startsWith("image/")) {
   throw new Error(`Image publique non disponible : ${file.status}`);
