@@ -1,18 +1,21 @@
-name: Publier un tweet test
+name: Publier un tweet test (verrouillé)
 
+# Publication désactivée par défaut : lancement manuel explicite uniquement.
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/test-tweet.yml
+    inputs:
+      confirmation:
+        description: "Pour autoriser l'envoi réel sur @alQamarDaily, taper JE_VALIDE_PUBLICATION_ALQAMARDAILY"
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 jobs:
   test-tweet:
-    runs-on: ubuntu-latest
+    if: ${{ inputs.confirmation == 'JE_VALIDE_PUBLICATION_ALQAMARDAILY' }}
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

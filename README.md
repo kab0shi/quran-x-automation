@@ -36,3 +36,7 @@ Le jeton Buffer ne doit jamais être écrit dans un fichier ni envoyé dans une 
 ## Configuration actuelle
 
 Le compte cible est `@alQamarDaily`. Dix aperçus sont générés, en commençant au verset indiqué dans `state.json`. Le workflow d'aperçu est aussi relancé lors des modifications du code, sans connexion à Buffer ni publication sur X. Les dix créneaux, de 18 h à 19 h 30 (Europe/Paris), sont destinés à une future activation manuelle du programmeur : celle-ci **n'est pas active**.
+
+## Publication de test verrouillée
+
+Le workflow « Publier un tweet test » ne se lance plus automatiquement quand un fichier workflow change. Une confirmation écrite exacte est obligatoire. Ne pas le lancer tant que le rendu n'a pas été validé, et tant que les images de test ne sont pas publiquement hébergées dans le dépôt. La vérification Buffer en lecture seule est accessible indépendamment et ne programme aucun tweet.

@@ -71,7 +71,10 @@ export async function listScheduledPosts(token, organizationId, channelId) {
 export async function createScheduledImagePost(token, { channelId, text, dueAt, imageUrl, altText }) {
   const data = await graphql(token, `
     mutation CreateImagePost($input: CreatePostInput!) {
-      createPost(input: $input) { id text dueAt status }
+      createPost(input: $input) {
+        ... on PostActionSuccess { post { id text dueAt status } }
+        ... on MutationError { message }
+      }
     }
   `, {
     input: {
@@ -83,5 +86,7 @@ export async function createScheduledImagePost(token, { channelId, text, dueAt, 
       assets: [{ image: { url: imageUrl, metadata: { altText } } }]
     }
   });
-  return data?.createPost;
+  const result = data?.createPost;
+  if (result?.post?.id) return result.post;
+  throw new Error(`Buffer : création de publication refusée : ${result?.message || "réponse inconnue"}`);
 }
