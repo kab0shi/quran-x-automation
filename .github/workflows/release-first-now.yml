@@ -1,4 +1,4 @@
-name: Publier maintenant le premier ayah sur X
+name: Publier maintenant le premier ayah sur X (correctif Buffer)
 
 # Exactement une fois sur création du workflow. Le script vérifie
 # l'identifiant de l'unique tweet déjà programmé avant de le modifier.

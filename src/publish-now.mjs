@@ -46,5 +46,5 @@ async function edit(input) {
 }
 await edit({ id, assets: [{ image: { url: img, metadata: { altText: first.altText } } }] });
 console.log("L'image a été remplacée sur le tweet déjà programmé.");
-const posted = await edit({ id, mode: "shareNow" });
+const posted = await edit({ id, mode: "shareNow", text: first.caption, assets: [{ image: { url: img, metadata: { altText: first.altText } } }] });
 console.log(`ENVOI IMMÉDIAT DEMANDÉ : post Buffer ${posted.id}, statut ${posted.status}, date ${posted.dueAt || "non spécifiée"}`);
