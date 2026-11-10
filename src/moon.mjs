@@ -52,8 +52,6 @@ export function moonSvg(date, cx = 600, cy = 1316, radius = 148) {
     const r = radius*(.004 + hash(i*5+3)*.021);
     return `<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="${r.toFixed(2)}" fill="#1a273a" opacity=".14"/><circle cx="${(x-r*.45).toFixed(2)}" cy="${(y-r*.45).toFixed(2)}" r="${(r*.3).toFixed(2)}" fill="#c7d0d5" opacity=".08"/>`;
   }).join("");
-  return `<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="${r.toFixed(2)}" fill="none" stroke="#111b28" stroke-width="1.3" opacity=".32"/><ellipse cx="${(x-r*.13).toFixed(2)}" cy="${(y-r*.18).toFixed(2)}" rx="${(r*.62).toFixed(2)}" ry="${(r*.49).toFixed(2)}" fill="#cad2d7" opacity=".09"/>`;
-  }).join("");
   return `
   <defs>
     <radialGradient id="earthshine" cx="35%" cy="28%" r="83%">

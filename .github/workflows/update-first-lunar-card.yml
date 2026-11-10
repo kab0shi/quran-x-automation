@@ -1,4 +1,4 @@
-name: Mettre à jour le premier visuel lunaire
+name: Mettre à jour le premier visuel lunaire (correctif)
 
 on:
   push:
