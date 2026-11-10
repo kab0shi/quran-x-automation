@@ -65,10 +65,29 @@ async function fetchEdition(edition, surah, verse) {
   throw lastError;
 }
 
+// QuranEnc keeps the Montada translation separate from explanatory footnotes.
+// Fawaz's flattened French file can inadvertently append a footnote fragment.
+export function parseMontadaResponse(payload, surah, verse) {
+  const item = payload?.result;
+  if (Number(item?.sura) !== surah || Number(item?.aya) !== verse || typeof item?.translation !== "string") {
+    throw new Error(`QuranEnc : réponse incohérente pour ${surah}:${verse}`);
+  }
+  const text = cleanText(item.translation).replace(new RegExp(`^(?:\\(${verse}\\)|${verse}[.)])\\s*`), "");
+  if (!text) throw new Error(`QuranEnc : traduction Montada vide pour ${surah}:${verse}`);
+  return text;
+}
+
+async function fetchMontada(surah, verse) {
+  const url = `https://quranenc.com/api/v1/translation/aya/french_montada/${surah}/${verse}?without_footnotes_symbols=1`;
+  return parseMontadaResponse(await fetchJson(url), surah, verse);
+}
+
 export async function fetchVerseBundle(pointer) {
   validatePointer(pointer);
   const keys = Object.keys(EDITIONS);
-  const texts = await Promise.all(keys.map((key) => fetchEdition(EDITIONS[key], pointer.surah, pointer.verse)));
+  const texts = await Promise.all(keys.map((key) => key === "french"
+    ? fetchMontada(pointer.surah, pointer.verse)
+    : fetchEdition(EDITIONS[key], pointer.surah, pointer.verse)));
   return {
     surah: pointer.surah,
     verse: pointer.verse,

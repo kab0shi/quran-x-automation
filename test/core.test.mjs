@@ -3,7 +3,7 @@ import test from "node:test";
 import { readFile } from "node:fs/promises";
 import config from "../config.json" with { type: "json" };
 import { altTextFor, cleanText, wrapText } from "../src/format.mjs";
-import { nextPointer, takePointers, parseEditionResponse } from "../src/quran.mjs";
+import { nextPointer, takePointers, parseEditionResponse, parseMontadaResponse } from "../src/quran.mjs";
 
 const fixtures = JSON.parse(await readFile(new URL("./fixtures/al-fatiha.json", import.meta.url), "utf8"));
 
@@ -48,4 +48,17 @@ test("un ancien format tableau reste accepté, mais pas une référence incohér
 test("les dix heures de publication correspondent au réglage", () => {
   assert.equal(config.times.length, config.postsPerDay);
   assert.equal(new Set(config.times).size, config.postsPerDay);
+});
+
+test("Montada depuis QuranEnc : la traduction est séparée des notes", () => {
+  const payload = { result: {
+    sura: "2", aya: "3",
+    translation: "3. qui croient à l’Inconnaissable (ghayb), accomplissent la Çalât et dépensent des biens que Nous leur avons dispensés.",
+    footnotes: "Une longue note qui ne doit jamais être affichée"
+  } };
+  assert.equal(
+    parseMontadaResponse(payload, 2, 3),
+    "qui croient à l’Inconnaissable (ghayb), accomplissent la Çalât et dépensent des biens que Nous leur avons dispensés."
+  );
+  assert.throws(() => parseMontadaResponse(payload, 2, 4), /incohérente/);
 });
