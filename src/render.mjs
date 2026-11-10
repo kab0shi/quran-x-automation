@@ -29,7 +29,7 @@ function translationRow(text, flag, y) {
   const lines = wrapText(text, 46);
   if (lines.length > 3) throw new Error(`Traduction trop longue (${lines.length} lignes) : carte additionnelle requise`);
   return {
-    next: y + (lines.length-1)*46 + 125,
+    next: y + (lines.length-1)*46 + 110,
     svg: `${flag(154,y-7)}${lineMarkup(lines, 266, y+28, { fontSize: 36, lineHeight: 46 })}`
   };
 }
@@ -64,7 +64,7 @@ export async function renderVerse(bundle, outputPath, sources, capture, publishA
   const captureX = Math.round((WIDTH - captureInfo.width)/2);
   const captureY = Math.round(225 + (322 - captureInfo.height)/2);
   const lunar = moonInfo(publishAt);
-  let y = 655;
+  let y = 612;
   const en = translationRow(bundle.english, gbFlag, y); y = en.next;
   const fr = translationRow(bundle.french, frFlag, y); y = fr.next;
   const tr = translationRow(bundle.turkish, trFlag, y);
