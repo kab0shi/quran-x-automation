@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Génère et programme cinq versets quotidiens multilingues sur X via Buffer.",
+  "description": "Génère et programme dix versets quotidiens multilingues sur X via Buffer.",
   "scripts": {
     "preview": "node src/index.mjs preview --fixture",
     "preview:live": "node src/index.mjs preview",

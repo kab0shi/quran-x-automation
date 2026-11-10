@@ -2,6 +2,14 @@ name: Générer les aperçus
 
 on:
   workflow_dispatch:
+  # Safe: preview only; never schedules or publishes to Buffer/X.
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "config.json"
+      - "test/**"
+      - ".github/workflows/preview.yml"
 
 permissions:
   contents: read

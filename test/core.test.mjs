@@ -3,7 +3,7 @@ import test from "node:test";
 import { readFile } from "node:fs/promises";
 import config from "../config.json" with { type: "json" };
 import { altTextFor, cleanText, wrapText } from "../src/format.mjs";
-import { nextPointer, takePointers } from "../src/quran.mjs";
+import { nextPointer, takePointers, parseEditionResponse } from "../src/quran.mjs";
 
 const fixtures = JSON.parse(await readFile(new URL("./fixtures/al-fatiha.json", import.meta.url), "utf8"));
 
@@ -27,4 +27,25 @@ test("texte alternatif complet et acceptable pour X", () => {
   assert.match(alt, /Translittération/);
   assert.match(alt, /Français/);
   assert.ok(alt.length <= 1000);
+});
+
+test("l'API retourne directement l'objet verset (format réel)", () => {
+  assert.equal(
+    parseEditionResponse({ chapter: 1, verse: 1, text: "بِسۡمِ ٱللَّهِ" }, "ara-quranuthmanihaf", 1, 1),
+    "بِسۡمِ ٱللَّهِ"
+  );
+});
+
+test("un ancien format tableau reste accepté, mais pas une référence incohérente", () => {
+  assert.equal(
+    parseEditionResponse({ chapter: [{ chapter: 1, verse: 1, text: "Bismi" }] }, "phonetic", 1, 1),
+    "Bismi"
+  );
+  assert.throws(() => parseEditionResponse({ chapter: 2, verse: 1, text: "mauvais verset" }, "arabe", 1, 1), /Réponse incohérente/);
+  assert.throws(() => parseEditionResponse({ chapter: 1, verse: 1 }, "arabe", 1, 1), /Réponse incohérente/);
+});
+
+test("les dix heures de publication correspondent au réglage", () => {
+  assert.equal(config.times.length, config.postsPerDay);
+  assert.equal(new Set(config.times).size, config.postsPerDay);
 });

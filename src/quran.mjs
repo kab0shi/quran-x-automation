@@ -35,6 +35,18 @@ async function fetchJson(url) {
   return response.json();
 }
 
+// Quran API verse endpoints return a verse object, not { chapter: [verse] }.
+// Accept the older nested format too, but always validate the exact reference.
+export function parseEditionResponse(payload, edition, surah, verse) {
+  const item = Array.isArray(payload?.chapter)
+    ? payload.chapter.find((candidate) => Number(candidate?.chapter) === surah && Number(candidate?.verse) === verse)
+    : payload;
+  if (Number(item?.chapter) !== surah || Number(item?.verse) !== verse || typeof item?.text !== "string" || !cleanText(item.text)) {
+    throw new Error(`Réponse incohérente pour ${edition} ${surah}:${verse} (champs reçus : ${Object.keys(payload ?? {}).join(", ")})`);
+  }
+  return cleanText(item.text);
+}
+
 async function fetchEdition(edition, surah, verse) {
   const path = `editions/${edition}/${surah}/${verse}.json`;
   const urls = [
@@ -45,11 +57,7 @@ async function fetchEdition(edition, surah, verse) {
   for (const url of urls) {
     try {
       const data = await fetchJson(url);
-      const item = data?.chapter?.[0];
-      if (!item || Number(item.chapter) !== surah || Number(item.verse) !== verse || !item.text) {
-        throw new Error(`Réponse incohérente pour ${edition} ${surah}:${verse}`);
-      }
-      return cleanText(item.text);
+      return parseEditionResponse(data, edition, surah, verse);
     } catch (error) {
       lastError = error;
     }
