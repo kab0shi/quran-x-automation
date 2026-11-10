@@ -35,9 +35,9 @@ jobs:
         if: steps.time.outputs.run == 'true'
         with:
           node-version: 22
-      - name: Installer les polices arabes
+      - name: Vérifier les polices système
         if: steps.time.outputs.run == 'true'
-        run: sudo apt-get update && sudo apt-get install -y fonts-noto-core fonts-noto-extra
+        run: fc-match 'Noto Naskh Arabic'
       - name: Installer les dépendances
         if: steps.time.outputs.run == 'true'
         run: npm install --no-audit --no-fund
