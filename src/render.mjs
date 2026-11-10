@@ -2,22 +2,14 @@ import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
 import { dirname } from "node:path";
 import { escapeXml, wrapText } from "./format.mjs";
+import { moonInfo, moonSvg } from "./moon.mjs";
 
 const WIDTH = 1200;
 const HEIGHT = 1500;
-const BACKGROUND = "#202124";
-const FOREGROUND = { r: 241, g: 243, b: 248 };
+const INK = "#e9dec9";
 
-function lineMarkup(lines, x, y, options = {}) {
-  const {
-    fontSize = 38,
-    lineHeight = Math.round(fontSize * 1.35),
-    fill = "#f1f3f8",
-    weight = 400,
-    anchor = "start",
-    letterSpacing = 0
-  } = options;
-  return `<text x="${x}" y="${y}" fill="${fill}" font-family="Noto Sans, Arial, sans-serif" font-size="${fontSize}" font-weight="${weight}" text-anchor="${anchor}" letter-spacing="${letterSpacing}">${lines.map((line, index) => `<tspan x="${x}" dy="${index === 0 ? 0 : lineHeight}">${escapeXml(line)}</tspan>`).join("")}</text>`;
+function lineMarkup(lines, x, y, { fontSize = 36, lineHeight = 46, fill = INK, anchor = "start" } = {}) {
+  return `<text x="${x}" y="${y}" fill="${fill}" font-family="Noto Serif, Georgia, serif" font-size="${fontSize}" text-anchor="${anchor}">${lines.map((line, index) => `<tspan x="${x}" dy="${index ? lineHeight : 0}">${escapeXml(line)}</tspan>`).join("")}</text>`;
 }
 
 function gbFlag(x, y) {
@@ -32,19 +24,13 @@ function trFlag(x, y) {
   return `<g transform="translate(${x} ${y})"><rect width="64" height="42" rx="4" fill="#e30a17"/><circle cx="27" cy="21" r="13" fill="#fff"/><circle cx="31" cy="21" r="10.5" fill="#e30a17"/><path d="M43 13l2.1 5 5.4.4-4.1 3.5 1.25 5.2-4.65-2.8-4.65 2.8 1.2-5.2-4.05-3.5 5.35-.4z" fill="#fff"/></g>`;
 }
 
-function translationSection({ language, text, y, flag, drawSeparator = true }) {
-  const lines = wrapText(text, 50);
-  if (lines.length > 3) throw new Error(`${language} occupe ${lines.length} lignes : image refusée pour préserver la lisibilité`);
-  const textY = y + 92;
-  const lineHeight = 49;
-  const textBottom = textY + (lines.length - 1) * lineHeight;
-  const separatorY = textBottom + 55;
+
+function translationRow(text, flag, y) {
+  const lines = wrapText(text, 46);
+  if (lines.length > 3) throw new Error(`Traduction trop longue (${lines.length} lignes) : carte additionnelle requise`);
   return {
-    bottom: drawSeparator ? separatorY : textBottom + 20,
-    svg: `${flag(82, y)}
-      <text x="160" y="${y + 32}" fill="#d6d7dc" font-family="Noto Sans, Arial, sans-serif" font-size="25" font-weight="700" letter-spacing="1">${language}</text>
-      ${lineMarkup(lines, 82, textY, { fontSize: 37, lineHeight, fill: "#f1f3f8" })}
-      ${drawSeparator ? `<path d="M78 ${separatorY}H1123" stroke="#777a80" stroke-opacity=".48" stroke-width="2"/>` : ""}`
+    next: y + (lines.length-1)*46 + 125,
+    svg: `${flag(154,y-7)}${lineMarkup(lines, 266, y+28, { fontSize: 36, lineHeight: 46 })}`
   };
 }
 
@@ -56,51 +42,55 @@ async function prepareQuranCapture(capture) {
   const rgba = Buffer.alloc(info.width * info.height * 4);
   for (let pixel = 0; pixel < info.width * info.height; pixel += 1) {
     const offset = pixel * info.channels;
-    const luminance = Math.round(data[offset] * 0.2126 + data[offset + 1] * 0.7152 + data[offset + 2] * 0.0722);
-    const alpha = Math.max(0, Math.min(255, Math.round((230 - luminance) * 8)));
-    const out = pixel * 4;
-    rgba[out] = FOREGROUND.r;
-    rgba[out + 1] = FOREGROUND.g;
-    rgba[out + 2] = FOREGROUND.b;
-    rgba[out + 3] = alpha;
+    const luminance = Math.round(data[offset] * .2126 + data[offset+1] * .7152 + data[offset+2] * .0722);
+    const alpha = Math.max(0, Math.min(255, Math.round((230-luminance)*8)));
+    const out = pixel*4;
+    rgba[out] = 237; rgba[out+1] = 222; rgba[out+2] = 201; rgba[out+3] = alpha;
   }
   return sharp(rgba, { raw: { width: info.width, height: info.height, channels: 4 } })
-    .trim({ background: { r: FOREGROUND.r, g: FOREGROUND.g, b: FOREGROUND.b, alpha: 0 } })
-    .resize({ width: 940, height: 325, fit: "inside", withoutEnlargement: false })
-    .png()
-    .toBuffer();
+    .trim({ background: { r: 237, g: 222, b: 201, alpha: 0 } })
+    .resize({ width: 945, height: 322, fit: "inside", withoutEnlargement: false })
+    .png().toBuffer();
 }
 
-export async function renderVerse(bundle, outputPath, sources, capture) {
-  const quranCapture = await prepareQuranCapture(capture);
-  const captureInfo = await sharp(quranCapture).metadata();
-  const captureX = Math.round((WIDTH - captureInfo.width) / 2);
-  const captureY = Math.round(175 + (325 - captureInfo.height) / 2);
+const ARABIC_SURAHS = {
+  1: "سُورَةُ الْفَاتِحَةِ",
+  2: "سُورَةُ الْبَقَرَةِ"
+};
 
-  let y = 555;
-  const english = translationSection({ language: "ENGLISH", text: bundle.english, y, flag: gbFlag });
-  y = english.bottom + 55;
-  const french = translationSection({ language: "FRANÇAIS", text: bundle.french, y, flag: frFlag });
-  y = french.bottom + 55;
-  const turkish = translationSection({ language: "TÜRKÇE", text: bundle.turkish, y, flag: trFlag, drawSeparator: false });
-  if (turkish.bottom > 1325) throw new Error(`${bundle.surah}:${bundle.verse} dépasserait la zone lisible`);
+export async function renderVerse(bundle, outputPath, sources, capture, publishAt = new Date()) {
+  const quran = await prepareQuranCapture(capture);
+  const captureInfo = await sharp(quran).metadata();
+  const captureX = Math.round((WIDTH - captureInfo.width)/2);
+  const captureY = Math.round(225 + (322 - captureInfo.height)/2);
+  const lunar = moonInfo(publishAt);
+  let y = 655;
+  const en = translationRow(bundle.english, gbFlag, y); y = en.next;
+  const fr = translationRow(bundle.french, frFlag, y); y = fr.next;
+  const tr = translationRow(bundle.turkish, trFlag, y);
+  if (tr.next > 1255) throw new Error(`Image ${bundle.surah}:${bundle.verse} trop longue pour laisser la lune visible`);
 
-  const source = `Source : Quran.com  •  EN : ${sources.english}  •  FR : ${sources.french}  •  TR : ${sources.turkish}`;
+  const surahAr = ARABIC_SURAHS[bundle.surah] || "سُورَة";
+  const surahName = `SŪRAT ${bundle.surahName.toUpperCase()}`;
+  const moon = moonSvg(publishAt, 600, 1321, 116);
   const svg = `<svg width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}" xmlns="http://www.w3.org/2000/svg">
-    <rect width="1200" height="1500" fill="${BACKGROUND}"/>
-    <text x="78" y="106" fill="#f1f3f8" font-family="Noto Sans, Arial, sans-serif" font-size="40" font-weight="800">SOURATE ${escapeXml(bundle.surahName.toUpperCase())}</text>
-    <text x="1122" y="103" fill="#aeb0b7" font-family="Noto Sans, Arial, sans-serif" font-size="27" font-weight="700" text-anchor="end">VERSET ${bundle.verse}  •  ${bundle.surah}:${bundle.verse}</text>
-    <path d="M78 140H1123" stroke="#777a80" stroke-opacity=".48" stroke-width="3"/>
-    ${english.svg}
-    ${french.svg}
-    ${turkish.svg}
-    <text x="1122" y="1465" fill="#aeb0b7" font-family="Noto Sans, Arial, sans-serif" font-size="14" text-anchor="end">${escapeXml(source)}</text>
+    <defs>
+      <radialGradient id="night" cx="50%" cy="47%" r="88%">
+        <stop offset="0" stop-color="#172435"/><stop offset=".58" stop-color="#0d1929"/><stop offset="1" stop-color="#07111e"/>
+      </radialGradient>
+    </defs>
+    <rect width="1200" height="1500" fill="url(#night)"/>
+    <text x="600" y="105" text-anchor="middle" direction="rtl" fill="#d8bea2" font-family="Noto Naskh Arabic, Noto Sans Arabic, serif" font-size="60">${escapeXml(surahAr)}</text>
+    <text x="600" y="154" text-anchor="middle" fill="#e6dac6" font-family="Noto Serif, Georgia, serif" font-size="26" letter-spacing="8">${escapeXml(surahName)}</text>
+    <text x="600" y="199" text-anchor="middle" fill="#d9c4a8" font-family="Noto Serif, Georgia, serif" font-size="31" letter-spacing="8">${bundle.surah} : ${bundle.verse}</text>
+    ${en.svg}
+    ${fr.svg}
+    ${tr.svg}
+    ${moon}
   </svg>`;
-
   await mkdir(dirname(outputPath), { recursive: true });
   await sharp(Buffer.from(svg))
-    .composite([{ input: quranCapture, left: captureX, top: captureY }])
-    .png({ compressionLevel: 9, palette: false })
-    .toFile(outputPath);
-  return { width: WIDTH, height: HEIGHT, outputPath };
+    .composite([{ input: quran, left: captureX, top: captureY }])
+    .png({ compressionLevel: 9, palette: false }).toFile(outputPath);
+  return { width: WIDTH, height: HEIGHT, outputPath, moon: lunar };
 }
