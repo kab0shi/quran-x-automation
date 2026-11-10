@@ -42,14 +42,17 @@ export function moonSvg(date, cx = 600, cy = 1316, radius = 148) {
     return x - Math.floor(x);
   };
   const maria = [
-    [-.35,-.42,.23,.16],[-.04,-.36,.18,.20],[.26,-.24,.23,.17],
-    [-.29,.02,.21,.16],[.22,.18,.17,.21],[-.07,.38,.25,.14]
-  ].map(([x,y,rx,ry],i) => `<ellipse cx="${cx+x*radius}" cy="${cy+y*radius}" rx="${rx*radius}" ry="${ry*radius}" transform="rotate(${15+i*22} ${cx+x*radius} ${cy+y*radius})" fill="#151c2a" opacity=".20"/>`).join("");
-  const craters = Array.from({length:270}, (_,i) => {
-    const x = cx+(hash(i*2+1)*1.88-.94)*radius;
-    const y = cy+(hash(i*2+2)*1.88-.94)*radius;
-    const r = radius*(.008 + hash(i*5+3)*.072);
-    return `<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="${r.toFixed(2)}" fill="none" stroke="#111b28" stroke-width="1.3" opacity=".32"/><ellipse cx="${(x-r*.13).toFixed(2)}" cy="${(y-r*.18).toFixed(2)}" rx="${(r*.62).toFixed(2)}" ry="${(r*.49).toFixed(2)}" fill="#cad2d7" opacity=".09"/>`;
+    [-.36,-.40,.25,.17],[-.10,-.37,.20,.14],[.24,-.29,.19,.17],
+    [-.28,.02,.20,.25],[.15,.14,.21,.16],[-.04,.38,.25,.12],
+    [.44,.32,.13,.19]
+  ].map(([x,y,rx,ry],i) => `<ellipse cx="${cx+x*radius}" cy="${cy+y*radius}" rx="${rx*radius}" ry="${ry*radius}" transform="rotate(${15+i*22} ${cx+x*radius} ${cy+y*radius})" fill="#132333" opacity=".26" filter="url(#moonMariaSoft)"/>`).join("");
+  const craters = Array.from({length:115}, (_,i) => {
+    const x = cx+(hash(i*2+1)*1.85-.925)*radius;
+    const y = cy+(hash(i*2+2)*1.85-.925)*radius;
+    const r = radius*(.004 + hash(i*5+3)*.021);
+    return `<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="${r.toFixed(2)}" fill="#1a273a" opacity=".14"/><circle cx="${(x-r*.45).toFixed(2)}" cy="${(y-r*.45).toFixed(2)}" r="${(r*.3).toFixed(2)}" fill="#c7d0d5" opacity=".08"/>`;
+  }).join("");
+  return `<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="${r.toFixed(2)}" fill="none" stroke="#111b28" stroke-width="1.3" opacity=".32"/><ellipse cx="${(x-r*.13).toFixed(2)}" cy="${(y-r*.18).toFixed(2)}" rx="${(r*.62).toFixed(2)}" ry="${(r*.49).toFixed(2)}" fill="#cad2d7" opacity=".09"/>`;
   }).join("");
   return `
   <defs>
@@ -63,6 +66,7 @@ export function moonSvg(date, cx = 600, cy = 1316, radius = 148) {
       <stop offset=".55" stop-color="#eee5d4"/>
       <stop offset="1" stop-color="#c0b4a4"/>
     </radialGradient>
+    <filter id="moonMariaSoft" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="6"/></filter>
     <filter id="moonHalo" x="-80%" y="-80%" width="260%" height="260%">
       <feGaussianBlur stdDeviation="9"/>
     </filter>
