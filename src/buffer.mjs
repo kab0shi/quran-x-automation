@@ -38,17 +38,34 @@ export async function resolveXChannel(token, targetHandle) {
 }
 
 export async function listScheduledPosts(token, organizationId, channelId) {
-  const data = await graphql(token, `
-    query Scheduled($organizationId: OrganizationId!, $channelIds: [ID!]) {
-      posts(input: {
-        organizationId: $organizationId,
-        filter: { status: [scheduled], channelIds: $channelIds }
-      }) {
-        id text dueAt status channelId
+  // Buffer returns a Relay connection; walk every page to avoid duplicate posts
+  // if more than one page of posts has already been scheduled.
+  const posts = [];
+  let after = null;
+  for (let page = 0; page < 40; page += 1) {
+    const data = await graphql(token, `
+      query Scheduled($organizationId: OrganizationId!, $channelIds: [ChannelId!], $after: String) {
+        posts(first: 50, after: $after, input: {
+          organizationId: $organizationId,
+          filter: { status: [scheduled], channelIds: $channelIds }
+        }) {
+          edges { node { id text dueAt status channelId } }
+          pageInfo { hasNextPage endCursor }
+        }
       }
+    `, { organizationId, channelIds: [channelId], after });
+    const connection = data?.posts;
+    if (!connection?.edges || !connection?.pageInfo) {
+      throw new Error("Buffer API : liste des publications programmées invalide");
     }
-  `, { organizationId, channelIds: [channelId] });
-  return data?.posts ?? [];
+    posts.push(...connection.edges.map((edge) => edge.node));
+    if (!connection.pageInfo.hasNextPage) return posts;
+    if (!connection.pageInfo.endCursor || connection.pageInfo.endCursor === after) {
+      throw new Error("Buffer API : curseur de pagination invalide");
+    }
+    after = connection.pageInfo.endCursor;
+  }
+  throw new Error("Buffer API : limite de pagination atteinte");
 }
 
 export async function createScheduledImagePost(token, { channelId, text, dueAt, imageUrl, altText }) {
