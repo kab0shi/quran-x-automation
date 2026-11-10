@@ -45,9 +45,11 @@ test("un ancien format tableau reste accepté, mais pas une référence incohér
   assert.throws(() => parseEditionResponse({ chapter: 1, verse: 1 }, "arabe", 1, 1), /Réponse incohérente/);
 });
 
-test("les dix heures de publication correspondent au réglage", () => {
-  assert.equal(config.times.length, config.postsPerDay);
-  assert.equal(new Set(config.times).size, config.postsPerDay);
+test("un fil de 10 ayat est programmé chaque jour à 18 h Paris", () => {
+  assert.equal(config.postsPerDay, 10);
+  assert.equal(config.publishTime, "18:00");
+  assert.equal(config.timezone, "Europe/Paris");
+  assert.equal(config.dailyFormat, "thread");
 });
 
 test("Montada depuis QuranEnc : la traduction est séparée des notes", () => {
