@@ -1,12 +1,5 @@
 [
   {
-    "reference": "1:1",
-    "lunarIlluminationPercent": 2,
-    "filename": "1-1.png",
-    "caption": "Sourate Al-Fatiha — Verset 1 (1:1)\n\n#Quran #Coran #Kuran",
-    "altText": "Sourate Al-Fatiha, verset 1 (1:1). Arabe : بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ. Translittération : Bismi Allahi Ar-Rahmani Ar-Rahimi. Anglais : In the name of God, the Lord of Mercy, the Giver of Mercy. Français : Au nom d’Allah, le Tout Clément, le Tout Miséricordieux.. Turc : Rahman ve Rahim olan Allah'ın adıyla. Sources : arabe Quran.com (capture fidèle), translittération Quran Phonetic, anglais M. A. S. Abdel Haleem, français Montada Islamic Foundation via QuranEnc.com, turc Diyanet İşleri."
-  },
-  {
     "reference": "1:2",
     "lunarIlluminationPercent": 2,
     "filename": "1-2.png",
@@ -68,5 +61,12 @@
     "filename": "2-3.png",
     "caption": "Sourate Al-Baqara — Verset 3 (2:3)\n\n#Quran #Coran #Kuran",
     "altText": "Sourate Al-Baqara, verset 3 (2:3). Arabe : ٱلَّذِينَ يُؤۡمِنُونَ بِٱلۡغَيۡبِ وَيُقِيمُونَ ٱلصَّلَوٰةَ وَمِمَّا رَزَقۡنَٰهُمۡ يُنفِقُونَ. Translittération : Al-Ladhina Yu'uminuna Bil-Ghaybi Wa Yuqimuna As-Salaata Wa Mimma Razaqnahum Yunfiquna. Anglais : who believe in the unseen, keep up the prayer, and give out of what We have provided for them. Français : qui croient à l’Inconnaissable (ghayb), accomplissent la Çalât et dépensent des biens que Nous leur avons dispensés.. Turc : Onlar, gaybe inanırlar, namazı kılarlar, kendilerine verdiğimiz rızıktan yerli yerince sarfederler. Sources : arabe Quran.com (capture fidèle), translittération Quran Phonetic, anglais M. A. S. Abdel Haleem, français Montada Islamic Foundation via QuranEnc.com, turc Diyanet İşleri."
+  },
+  {
+    "reference": "2:4",
+    "lunarIlluminationPercent": 2,
+    "filename": "2-4.png",
+    "caption": "Sourate Al-Baqara — Verset 4 (2:4)\n\n#Quran #Coran #Kuran",
+    "altText": "Sourate Al-Baqara, verset 4 (2:4). Arabe : وَٱلَّذِينَ يُؤۡمِنُونَ بِمَآ أُنزِلَ إِلَيۡكَ وَمَآ أُنزِلَ مِن قَبۡلِكَ وَبِٱلۡأٓخِرَةِ هُمۡ يُوقِنُونَ. Translittération : Wa Al-Ladhina Yu'uminuna Bima 'Unzila 'Ilayka Wa Ma 'Unzila Min Qablika Wa Bil-'Akhirati Hum Yuqinuna. Anglais : those who believe in the revelation sent down to you [Muhammad], and in what was sent before you, those who have firm faith in the Hereafter. Français : Ceux qui croient à ce qui t’a été révélé et à ce qui a été révélé avant toi, et qui croient avec certitude à la vie future.. Turc : Onlar, sana indirilen Kitap'a da, senden önce indirilenlere de inanırlar; ahirete de yalnız onlar kesinlikle inanırlar. Sources : arabe Quran.com (capture fidèle), translittération Quran Phonetic, anglais M. A. S. Abdel Haleem, français Montada Islamic Foundation via QuranEnc.com, turc Diyanet İşleri."
   }
 ]
