@@ -1,0 +1,23 @@
+name: Tester le fil Buffer en brouillon puis le supprimer
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/thread-check.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  draft:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Vérifier 10 images dans un seul fil sans publier
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+        run: node src/check-thread-draft.mjs
