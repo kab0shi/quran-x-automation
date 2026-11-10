@@ -1,0 +1,56 @@
+name: Mettre à jour le premier visuel lunaire
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/update-first-lunar-card.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  first-card:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install chromium
+      - name: Construire uniquement Al-Fatiha 1:1 avec la Lune réaliste
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile, writeFile, mkdir } from "node:fs/promises";
+          import config from "./config.json" with { type: "json" };
+          import { fetchVerseBundle } from "./src/quran.mjs";
+          import { captureQuranVerses } from "./src/quran-screenshot.mjs";
+          import { renderVerse } from "./src/render.mjs";
+          import { captionFor, altTextFor } from "./src/format.mjs";
+          const p = { surah:1, verse:1 };
+          const bundle = await fetchVerseBundle(p);
+          const grabs = await captureQuranVerses([p], "public/previews/quran-source");
+          const date = new Date("2026-11-10T17:00:00.000Z");
+          const rendered = await renderVerse(bundle, "public/previews/1-1.png", config.sources, grabs.get("1:1"), date);
+          const path = "public/previews/manifest.json";
+          const manifest = JSON.parse(await readFile(path,"utf8"));
+          const item = {
+            reference:"1:1",
+            lunarIlluminationPercent:rendered.moon.percent,
+            filename:"1-1.png",
+            caption:captionFor(bundle,config.hashtags),
+            altText:altTextFor(bundle,config.sources)
+          };
+          const updated = [item,...manifest.filter(p=>p.reference!=="1:1")];
+          await writeFile(path,JSON.stringify(updated,null,2)+"\n");
+          console.log("Lune réaliste intégrée à Al-Fatiha 1:1 avec",item.lunarIlluminationPercent,"% d'illumination");
+          NODE
+      - name: Publier la nouvelle image publique
+        run: |
+          git config user.name "alQamarDaily-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f public/previews/1-1.png public/previews/manifest.json
+          git commit -m "Replace original test image with clear earthshine Moon [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
