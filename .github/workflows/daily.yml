@@ -1,0 +1,78 @@
+name: alQamarDaily — 10 ayat tous les jours à 18h Paris
+
+on:
+  schedule:
+    # UTC switches with DST; the script only executes at 17h in Europe/Paris.
+    - cron: '20 15 * * *'
+    - cron: '20 16 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: alqamardaily-daily-publish
+  cancel-in-progress: false
+
+jobs:
+  daily-thread:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Vérifier le créneau 17 h Europe/Paris
+        id: time
+        run: |
+          H=$(TZ=Europe/Paris date +%H)
+          if [ "$H" = "17" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Créneau incorrect (Paris: $(TZ=Europe/Paris date)), aucune publication."
+          fi
+      - uses: actions/checkout@v4
+        if: steps.time.outputs.run == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.time.outputs.run == 'true'
+        with:
+          node-version: 22
+      - name: Installer les polices arabes
+        if: steps.time.outputs.run == 'true'
+        run: sudo apt-get update && sudo apt-get install -y fonts-noto-core fonts-noto-extra
+      - name: Installer les dépendances
+        if: steps.time.outputs.run == 'true'
+        run: npm install --no-audit --no-fund
+      - name: Installer Chromium
+        if: steps.time.outputs.run == 'true'
+        run: npx playwright install --with-deps chromium
+      - name: Tests
+        if: steps.time.outputs.run == 'true'
+        run: npm test
+      - name: Générer les 10 cartes avec la phase lunaire du jour
+        if: steps.time.outputs.run == 'true'
+        run: node src/index.mjs schedule
+      - name: Rendre les images publiques pour Buffer
+        if: steps.time.outputs.run == 'true'
+        run: |
+          git config user.name "alQamarDaily-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f public/posts/ || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Host lunar cards for $(TZ=Europe/Paris date +%F) [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Programmer le fil pour 18h Europe/Paris
+        if: steps.time.outputs.run == 'true'
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+          IMAGES_COMMITTED: 'true'
+        run: node src/index.mjs schedule
+      - name: Enregistrer les versets déjà programmés
+        if: steps.time.outputs.run == 'true'
+        run: |
+          git add state.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Advance Quran verse after Buffer confirmation [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
