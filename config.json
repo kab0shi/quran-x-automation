@@ -1,7 +1,7 @@
 {
   "targetHandle": "alQamarDaily",
   "timezone": "Europe/Paris",
-  "postsPerDay": 5,
+  "postsPerDay": 10,
   "times": ["18:00", "18:10", "18:20", "18:30", "18:40"],
   "start": { "surah": 1, "verse": 1 },
   "publicRepository": "kab0shi/quran-x-automation",
