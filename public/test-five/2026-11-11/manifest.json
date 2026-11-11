@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-11",
+  "expectedFirst": "1:2",
+  "next": {
+    "surah": 1,
+    "verse": 7
+  },
+  "posts": [
+    {
+      "reference": "1:2",
+      "filename": "1-2.png",
+      "caption": "Al Fatiha 1:2",
+      "altText": "Sourate Al-Fatiha, verset 2 (1:2). Arabe : ٱلۡحَمۡدُ لِلَّهِ رَبِّ ٱلۡعَٰلَمِينَ. Translittération : Al-Hamdu Lillahi Rabbi Al-`Alamina. Anglais : Praise belongs to God, Lord of the Worlds. Français : Louange à Allah, Seigneur de l’Univers.. Turc : Hamd, Alemlerin Rabbi Allah'a mahsustur. Sources : arabe Quran.com (capture fidèle), translittération Quran Phonetic, anglais M. A. S. Abdel Haleem, français Montada Islamic Foundation via QuranEnc.com, turc Diyanet İşleri.",
+      "moonPercent": 6
+    },
+    {
+      "reference": "1:3",
+      "filename": "1-3.png",
+      "caption": "Al Fatiha 1:3",
+      "altText": "Sourate Al-Fatiha, verset 3 (1:3). Arabe : ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ. Translittération : Ar-Rahmani Ar-Rahimi. Anglais : the Lord of Mercy, the Giver of Mercy. Français : Le Tout Clément, le Tout Miséricordieux.. Turc : O Rahman ve Rahim'dir. Sources : arabe Quran.com (capture fidèle), translittération Quran Phonetic, anglais M. A. S. Abdel Haleem, français Montada Islamic Foundation via QuranEnc.com, turc Diyanet İşleri.",
+      "moonPercent": 6
+    },
+    {
+      "reference": "1:4",
+      "filename": "1-4.png",
+      "caption": "Al Fatiha 1:4",
+      "altText": "Sourate Al-Fatiha, verset 4 (1:4). Arabe : مَٰلِكِ يَوۡمِ ٱلدِّينِ. Translittération : Maliki Yawmi Ad-Dini. Anglais : Master of the Day of Judgement. Français : Souverain du Jour de la Rétribution.. Turc : Din Gününün sahibidir. Sources : arabe Quran.com (capture fidèle), translittération Quran Phonetic, anglais M. A. S. Abdel Haleem, français Montada Islamic Foundation via QuranEnc.com, turc Diyanet İşleri.",
+      "moonPercent": 6
+    },
+    {
+      "reference": "1:5",
+      "filename": "1-5.png",
+      "caption": "Al Fatiha 1:5",
+      "altText": "Sourate Al-Fatiha, verset 5 (1:5). Arabe : إِيَّاكَ نَعۡبُدُ وَإِيَّاكَ نَسۡتَعِينُ. Translittération : Iyaka Na`budu Wa 'Iyaka Nasta`inu. Anglais : It is You we worship; it is You we ask for help. Français : C’est Toi (Seul) Que nous adorons, et c’est Toi (Seul) Dont nous cherchons l’assistance.. Turc : Ancak Sana kulluk eder ve yalnız Senden yardım dileriz. Sources : arabe Quran.com (capture fidèle), translittération Quran Phonetic, anglais M. A. S. Abdel Haleem, français Montada Islamic Foundation via QuranEnc.com, turc Diyanet İşleri.",
+      "moonPercent": 6
+    },
+    {
+      "reference": "1:6",
+      "filename": "1-6.png",
+      "caption": "Al Fatiha 1:6",
+      "altText": "Sourate Al-Fatiha, verset 6 (1:6). Arabe : ٱهۡدِنَا ٱلصِّرَٰطَ ٱلۡمُسۡتَقِيمَ. Translittération : Ihdina As-Sirata Al-Mustaqima. Anglais : Guide us to the straight path. Français : Guide-nous sur la voie droite,. Turc : Bizi doğru yola eriştir. Sources : arabe Quran.com (capture fidèle), translittération Quran Phonetic, anglais M. A. S. Abdel Haleem, français Montada Islamic Foundation via QuranEnc.com, turc Diyanet İşleri.",
+      "moonPercent": 6
+    }
+  ]
+}
