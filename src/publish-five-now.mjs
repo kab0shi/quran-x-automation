@@ -23,7 +23,7 @@ async function query(query,variables={}){
  return data.data;
 }
 const postsQuery=`query($organizationId: OrganizationId!, $channelIds: [ChannelId!]) {
- posts(first: 100,input:{organizationId:$organizationId,filter:{status:[scheduled,sent],channelIds:$channelIds}}) {
+ posts(first: 50,input:{organizationId:$organizationId,filter:{status:[scheduled,sent],channelIds:$channelIds}}) {
   edges {node{id text status externalLink}} pageInfo{hasNextPage}
  }
 }`;
