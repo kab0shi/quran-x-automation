@@ -43,16 +43,31 @@ for(const p of manifest.posts){
  const image=await fetch(imageUrl,{method:"HEAD"});
  if(!image.ok || !image.headers.get("content-type")?.startsWith("image/"))throw Error(`Image non accessible pour ${caption}: ${image.status}`);
  const assets=[{image:{url:imageUrl,metadata:{altText:p.altText}}}];
- const created=await query(`mutation($input:CreatePostInput!){
-  createPost(input:$input){... on PostActionSuccess{post{id status}} ... on MutationError{message}}
- }`,{input:{channelId:channel.id,text:caption,mode:"addToQueue",schedulingType:"automatic",saveToDraft:true,assets}});
- const draft=created.createPost;
- if(!draft?.post?.id)throw Error(`Brouillon refusé: ${draft?.message||"inconnu"}`);
- const id=draft.post.id;
- const response=await query(`mutation($input:EditPostInput!){
-  editPost(input:$input){... on PostActionSuccess{post{id status}} ... on MutationError{message}}
- }`,{input:{id,mode:"shareNow",text:caption,assets}});
- if(response?.editPost?.post?.id!==id)throw Error(`Envoi immédiat refusé pour ${caption} ; brouillon Buffer ${id}: ${response?.editPost?.message||"inconnu"}`);
+ let id;
+ if(p.reference==="1:2"){
+  // Reuse the first trial's draft; never make a duplicate for this verse.
+  id="6af46d63dfd0aa4324ff72ae";
+  const current=await query(`query($input:PostInput!){post(input:$input){id text status externalLink}}`,{input:{id}});
+  if(current.post?.text!==caption)throw Error("Le brouillon de reprise ne correspond pas au verset 1:2");
+  if(current.post.status==="sent"){
+   if(!current.post.externalLink)throw Error("1:2 est envoyé mais l'URL X n'est pas encore disponible");
+   console.log("DÉJÀ ENVOYÉ",caption,current.post.externalLink);
+   out.push({reference:p.reference,id,url:current.post.externalLink,alreadySent:true});
+   existing.set(caption,current.post);
+   continue;
+  }
+  if(current.post.status!=="draft")throw Error("Le brouillon 1:2 n'est plus en brouillon, statut "+current.post.status);
+  const response=await query(`mutation($input:EditPostInput!){
+   editPost(input:$input){... on PostActionSuccess{post{id status}} ... on MutationError{message}}
+  }`,{input:{id,mode:"shareNow",saveToDraft:false,schedulingType:"automatic",text:caption,assets}});
+  if(response?.editPost?.post?.id!==id)throw Error(`Libération du brouillon refusée pour ${caption}: ${response?.editPost?.message||"inconnu"}`);
+ } else {
+  const response=await query(`mutation($input:CreatePostInput!){
+   createPost(input:$input){... on PostActionSuccess{post{id status}} ... on MutationError{message}}
+  }`,{input:{channelId:channel.id,text:caption,mode:"shareNow",schedulingType:"automatic",saveToDraft:false,assets}});
+  id=response?.createPost?.post?.id;
+  if(!id)throw Error(`Publication immédiate refusée pour ${caption}: ${response?.createPost?.message||"inconnu"}`);
+ }
  let published=null;
  for(let attempts=0;attempts<12;attempts++){
   const got=await query(`query($input:PostInput!){post(input:$input){id status externalLink sentAt error{message}}}`,{input:{id}});
