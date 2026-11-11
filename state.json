@@ -1,8 +1,40 @@
 {
   "nextVerse": {
     "surah": 1,
-    "verse": 2
+    "verse": 7
   },
-  "lastCompletedDate": "2026-11-10",
-  "lastBufferPostId": "6af3303d825741bba83c7d27"
+  "lastCompletedDate": "2026-11-11",
+  "lastBufferPostId": "6af46e2ba173ddbab2661fa7",
+  "lastTestPublications": [
+    {
+      "reference": "1:2",
+      "id": "6af46d63dfd0aa4324ff72ae",
+      "url": "https://twitter.com/alQamarDaily/status/2120509653742129339",
+      "alreadySent": false
+    },
+    {
+      "reference": "1:3",
+      "id": "6af46e23767c4eae7816d2b6",
+      "url": "https://twitter.com/alQamarDaily/status/2120509664857100490",
+      "alreadySent": false
+    },
+    {
+      "reference": "1:4",
+      "id": "6af46e25dfd0aa4324ffd4b7",
+      "url": "https://twitter.com/alQamarDaily/status/2120509677813252419",
+      "alreadySent": false
+    },
+    {
+      "reference": "1:5",
+      "id": "6af46e28767c4eae7816d40c",
+      "url": "https://twitter.com/alQamarDaily/status/2120509690324877429",
+      "alreadySent": false
+    },
+    {
+      "reference": "1:6",
+      "id": "6af46e2ba173ddbab2661fa7",
+      "url": "https://twitter.com/alQamarDaily/status/2120509700756193759",
+      "alreadySent": false
+    }
+  ]
 }
