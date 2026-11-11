@@ -1,0 +1,31 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import config from "../config.json" with { type: "json" };
+import state from "../state.json" with { type: "json" };
+import { fetchVerseBundle, takePointers } from "./quran.mjs";
+import { captureQuranVerses } from "./quran-screenshot.mjs";
+import { renderVerse } from "./render.mjs";
+import { altTextFor } from "./format.mjs";
+import { join } from "node:path";
+const day = new Intl.DateTimeFormat("en-CA", { timeZone:"Europe/Paris",year:"numeric",month:"2-digit",day:"2-digit" }).format(new Date());
+if(day !== "2026-11-11") throw Error("Le test de cinq images est réservé au 11 novembre.");
+if(state.nextVerse.surah !== 1 || state.nextVerse.verse !== 2) throw Error("Le pointeur des versets a évolué; lot annulé");
+if(config.targetHandle !== "alQamarDaily") throw Error("Compte X cible incorrect");
+const {pointers,next}=takePointers(state.nextVerse,5);
+const bundles=await Promise.all(pointers.map(fetchVerseBundle));
+const root="public/test-five/2026-11-11";
+await mkdir(root,{recursive:true});
+const captured=await captureQuranVerses(pointers,join(root,"quran-source"));
+const publishAt = new Date("2026-11-11T17:00:00Z");
+const posts=[];
+for(const b of bundles) {
+  const ref=`${b.surah}:${b.verse}`;
+  const capture=captured.get(ref);
+  if(!capture?.path) throw Error(`Capture Quran.com absente pour ${ref}`);
+  const filename=`${b.surah}-${b.verse}.png`;
+  const info=await renderVerse(b,join(root,filename),config.sources,capture,publishAt);
+  const caption=`Al Fatiha ${b.surah}:${b.verse}`;
+  const altText=altTextFor(b,config.sources);
+  posts.push({reference:ref,filename,caption,altText,moonPercent:info.moon.percent});
+}
+await writeFile(join(root,"manifest.json"),JSON.stringify({date:day,expectedFirst:"1:2",next,posts},null,2)+"\n");
+console.log("LOT VALIDÉ 5 CARTES :",posts.map(x=>x.reference).join(", "),"Lune",posts[0].moonPercent,"%");
